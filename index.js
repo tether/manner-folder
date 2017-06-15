@@ -33,10 +33,9 @@ module.exports = function (folder) {
 
 function structure (folder, cb) {
   const routes = {
-    '/': require(folder)
+    '/': manner(require(folder))
   }
-  const files = fs.readdirSync(folder)
-  files.map(file => {
+  fs.readdirSync(folder).map(file => {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
       routes['/' + file] = manner(require(path))
