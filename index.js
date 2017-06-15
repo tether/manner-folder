@@ -3,6 +3,7 @@
  */
 
 const fs = require('fs')
+const parse = require('url').parse
 const manner = require('manner')
 
 /**
@@ -16,7 +17,9 @@ const manner = require('manner')
 module.exports = function (folder) {
   const routes = structure(folder)
   return (request) => {
-
+    const pathname = parse(request.url).pathname
+    const cb = routes[pathname]
+    return cb(request)
   }
 }
 
@@ -29,7 +32,9 @@ module.exports = function (folder) {
  */
 
 function structure (folder, cb) {
-  const routes = {}
+  const routes = {
+    '/': require(folder)
+  }
   const files = fs.readdirSync(folder)
   files.map(file => {
     const path = folder + '/' + file
@@ -37,4 +42,5 @@ function structure (folder, cb) {
       routes['/' + file] = manner(require(path))
     }
   })
+  return routes
 }
