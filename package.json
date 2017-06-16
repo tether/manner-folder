@@ -1,7 +1,6 @@
-
 {
   "name": "beautiful-manner",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -23,5 +22,8 @@
   "homepage": "https://github.com/tether/beautiful-manner#readme",
   "devDependencies": {
     "tape": "*"
+  },
+  "dependencies": {
+    "manner": "^1.0.0"
   }
 }
