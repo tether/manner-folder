@@ -5,7 +5,7 @@
 [![Downloads](https://img.shields.io/npm/dm/beautiful-manner.svg)](http://npm-stat.com/charts.html?package=beautiful-manner)
 [![guidelines](https://tether.github.io/contribution-guide/badge-guidelines.svg)](https://github.com/tether/contribution-guide)
 
-Create an API in **a second** from a folder.
+Based on [manner](https://github.com/tether/manner), this module allows you to create web services in **a second** from a folder.
 
 ## Usage
 
