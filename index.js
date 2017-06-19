@@ -25,7 +25,6 @@ module.exports = function (folder) {
   } else {
     routes = structure(folder)
   }
-  console.log(routes)
   return (request) => {
     const pathname = parse(request.url).pathname
     const cb = routes[pathname]
