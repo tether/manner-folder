@@ -5,8 +5,8 @@ module.exports = {
   get(params) {
     return fs.createReadStream(__dirname + '/people.json')
   },
-  post() {
-    return 'hello ash'
+  post(params) {
+    return params.name
   }
 
 }

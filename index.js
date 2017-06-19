@@ -5,6 +5,7 @@
 const fs = require('fs')
 const parse = require('url').parse
 const manner = require('manner')
+const proxy = require('proxy-hook')
 
 /**
  * Create HTTP methods middleware from folder structure.
@@ -38,7 +39,13 @@ function structure (folder, cb) {
   fs.readdirSync(folder).map(file => {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
-      routes['/' + file] = manner(require(path))
+      var hook = {}
+      try {
+        hook = require(path + '/hook')
+      } catch (e) {
+        console.log('HOOK NOT DEFINED')
+      }
+      routes['/' + file] = manner(proxy(require(path), hook.before, hook.after))
     }
   })
   return routes
