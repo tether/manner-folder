@@ -24,6 +24,7 @@
     "tape": "*"
   },
   "dependencies": {
-    "manner": "^1.0.0"
+    "manner": "^1.0.0",
+    "proxy-hook": "^1.0.0"
   }
 }
