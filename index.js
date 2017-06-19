@@ -34,19 +34,33 @@ module.exports = function (folder) {
 
 function structure (folder, cb) {
   const routes = {
-    '/': manner(require(folder))
+    '/': service(folder)
   }
   fs.readdirSync(folder).map(file => {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
-      var hook = {}
-      try {
-        hook = require(path + '/hook')
-      } catch (e) {
-        console.log('HOOK NOT DEFINED')
-      }
-      routes['/' + file] = manner(proxy(require(path), hook.before, hook.after))
+      routes['/' + file] = service(path)
     }
   })
   return routes
+}
+
+
+/**
+ * Create service.
+ *
+ * A service is a request handler plus optional hook
+ * functions.
+ *
+ * @param {String} folder
+ * @return {Function}
+ * @api private
+ */
+
+function service (folder) {
+  var hook = {}
+  try {
+    hook = require(folder + '/hook')
+  } catch (e) {}
+  return manner(proxy(require(folder), hook.before, hook.after))
 }
