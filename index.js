@@ -3,6 +3,7 @@
  */
 
 const fs = require('fs')
+const join = require('path').join
 const parse = require('url').parse
 const manner = require('manner')
 const proxy = require('proxy-hook')
@@ -16,7 +17,15 @@ const proxy = require('proxy-hook')
  */
 
 module.exports = function (folder) {
-  const routes = structure(folder)
+  let routes = {}
+  if (typeof folder === 'object') {
+    Object.keys(folder).map(item => {
+      routes = Object.assign(routes, structure(folder[item], item))
+    })
+  } else {
+    routes = structure(folder)
+  }
+  console.log(routes)
   return (request) => {
     const pathname = parse(request.url).pathname
     const cb = routes[pathname]
@@ -32,14 +41,14 @@ module.exports = function (folder) {
  * @api private
  */
 
-function structure (folder, cb) {
-  const routes = {
-    '/': service(folder)
-  }
+function structure (folder, dir = '/') {
+  let routes = {}
+  let root = join('/', dir)
+  routes[root] = service(folder)
   fs.readdirSync(folder).map(file => {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
-      routes['/' + file] = service(path)
+      routes[join(root, file)] = service(path)
     }
   })
   return routes
