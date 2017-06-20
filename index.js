@@ -7,6 +7,7 @@ const join = require('path').join
 const parse = require('url').parse
 const manner = require('manner')
 const proxy = require('proxy-hook')
+const schema = require('protocol-buffers-schema').parse
 
 /**
  * Create HTTP methods middleware from folder structure.
@@ -67,8 +68,47 @@ function structure (folder, dir = '/') {
 
 function service (folder) {
   var hook = {}
+  var before = {}
   try {
     hook = require(folder + '/hook')
+    before = hook.before
   } catch (e) {}
-  return manner(proxy(require(folder), hook.before, hook.after))
+
+  const validation = protocol(folder)
+  Object.keys(validation)
+    .map(key => {
+      const method = before[key]
+      const result = validation[key]
+      before[key]= (params, data) => {
+        return method
+          ? method.apply(null, result)
+          : validation[key]
+      }
+    })
+  return manner(proxy(require(folder), before, hook.after))
+}
+
+
+/**
+ *
+ */
+
+function protocol (folder) {
+  const result = {}
+  const name = folder.split('/').pop()
+  try {
+      const obj = schema(fs.readFileSync(`${folder}/${name}.schema`))
+      obj.messages.map(message => {
+        const fields = {}
+        //console.log('message is', message.name.toLowerCase(), message)
+        result[message.name.toLowerCase()] = (params, data) => {
+          message.fields.map(field => {
+            if (field.required && data[field.name] == null) throw new Error('missing!!')
+          })
+          return [params, data]
+        }
+      })
+  } catch (e) {
+  }
+  return result
 }

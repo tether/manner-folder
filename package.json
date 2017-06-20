@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "manner": "^1.1.0",
+    "protocol-buffers-schema": "^3.3.1",
     "proxy-hook": "^1.0.0"
   }
 }
