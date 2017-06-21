@@ -7,7 +7,8 @@ const join = require('path').join
 const parse = require('url').parse
 const manner = require('manner')
 const proxy = require('proxy-hook')
-const schema = require('protocol-buffers-schema').parse
+const protocol = require('tether-schema')
+
 
 /**
  * Create HTTP methods middleware from folder structure.
@@ -26,10 +27,10 @@ module.exports = function (folder) {
   } else {
     routes = structure(folder)
   }
-  return (request) => {
+  return (request, response) => {
     const pathname = parse(request.url).pathname
     const cb = routes[pathname]
-    return cb(request)
+    return cb(request, response)
   }
 }
 
@@ -58,8 +59,7 @@ function structure (folder, dir = '/') {
 /**
  * Create service.
  *
- * A service is a request handler plus optional hook
- * functions.
+ * A service is a request handler with optional schema.
  *
  * @param {String} folder
  * @return {Function}
@@ -67,48 +67,17 @@ function structure (folder, dir = '/') {
  */
 
 function service (folder) {
-  var hook = {}
-  var before = {}
-  try {
-    hook = require(folder + '/hook')
-    before = hook.before
-  } catch (e) {}
-
-  const validation = protocol(folder)
-  Object.keys(validation)
-    .map(key => {
-      const method = before[key]
-      const result = validation[key]
-      before[key]= (params, data) => {
-        return method
-          ? method.apply(null, result)
-          : validation[key]
-      }
-    })
-  return manner(proxy(require(folder), before, hook.after))
-}
-
-
-/**
- *
- */
-
-function protocol (folder) {
-  const result = {}
+  // handle case if does not exist, also create default webservice if index.js does not exist
+  const api = require(folder)
   const name = folder.split('/').pop()
-  try {
-      const obj = schema(fs.readFileSync(`${folder}/${name}.schema`))
-      obj.messages.map(message => {
-        const fields = {}
-        //console.log('message is', message.name.toLowerCase(), message)
-        result[message.name.toLowerCase()] = (params, data) => {
-          message.fields.map(field => {
-            if (field.required && data[field.name] == null) throw new Error('missing!!')
-          })
-          return [params, data]
-        }
-      })
-  } catch (e) {
+  const file = `${folder}/${name}.schema`
+
+  if (fs.existsSync(file)) {
+    const schema = protocol(fs.readFileSync(`${folder}/${name}.schema`))
+    Object.keys(api).map(method => {
+      const previous = api[method]
+      api[method] = (params, data) => previous(params, schema(method, data))
+    })
   }
-  return result
+  return manner(proxy(api))
 }

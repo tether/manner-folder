@@ -17,5 +17,5 @@ const api = services({
  */
 
 http.createServer((req, res) => {
-  api(req).pipe(res)
+  api(req, res).pipe(res)
 }).listen(4000)
