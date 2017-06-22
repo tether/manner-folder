@@ -30,7 +30,13 @@ module.exports = function (folder) {
   return (request, response) => {
     const pathname = parse(request.url).pathname
     const cb = routes[pathname]
-    return cb(request, response)
+    if (cb) return cb(request, response)
+    else {
+      response.statusCode = 404
+      response.statusMessage = 'Not Found'
+      response.end()
+      return request
+    }
   }
 }
 
