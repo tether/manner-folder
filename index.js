@@ -6,8 +6,7 @@ const fs = require('fs')
 const join = require('path').join
 const parse = require('url').parse
 const manner = require('manner')
-const proxy = require('proxy-hook')
-const protocol = require('tether-schema')
+const status = require('response-status')
 
 
 /**
@@ -19,43 +18,35 @@ const protocol = require('tether-schema')
  */
 
 module.exports = function (folder) {
-  let routes = {}
-  if (typeof folder === 'object') {
-    Object.keys(folder).map(item => {
-      routes = Object.assign(routes, structure(folder[item], item))
-    })
-  } else {
-    routes = structure(folder)
-  }
-  return (request, response) => {
-    const pathname = parse(request.url).pathname
-    const cb = routes[pathname]
-    if (cb) return cb(request, response)
-    else {
-      response.statusCode = 404
-      response.statusMessage = 'Not Found'
-      response.end()
-      return request
-    }
+  const tree = {}
+  const routes = walk(folder)
+  return (req, res) => {
+    const pathname = parse(req.url).pathname
+    const handler = routes[pathname]
+    return handler ? handler(req, res) : notfound(req, res)
   }
 }
 
+
 /**
- * Give routes from folder structure
+ * Recursively walk a folder and create a tree
+ * graph representation.
  *
- * @param {String} fodler path
+ * @param {Object} routes
+ * @param {Object} parent
+ * @param {String} folder
  * @return {Object}
  * @api private
  */
 
-function structure (folder, dir = '/') {
+function walk (folder, dir = '/') {
   let routes = {}
-  let root = join('/', dir)
-  routes[root] = service(folder)
   fs.readdirSync(folder).map(file => {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
-      routes[join(root, file)] = service(path)
+      dir = dir + file
+      routes[dir] = middleware(path)
+      routes = Object.assign(routes, walk(path, dir + '/'))
     }
   })
   return routes
@@ -63,27 +54,37 @@ function structure (folder, dir = '/') {
 
 
 /**
- * Create service.
+ * Create request middleware.
  *
- * A service is a request handler with optional schema.
- *
- * @param {String} folder
- * @return {Function}
+ * @param {String} path
  * @api private
  */
 
-function service (folder) {
-  // handle case if does not exist, also create default webservice if index.js does not exist
-  const api = require(folder)
-  const name = folder.split('/').pop()
-  const file = `${folder}/${name}.schema`
-
-  if (fs.existsSync(file)) {
-    const schema = protocol(fs.readFileSync(`${folder}/${name}.schema`))
-    Object.keys(api).map(method => {
-      const previous = api[method]
-      api[method] = (params, data) => previous(params, schema(method, data))
-    })
+function middleware (path) {
+  let api = {}
+  try {
+    api = require(path)
+  } catch (e) {
+    return notfound
   }
-  return manner(proxy(api))
+  return manner(api)
+}
+
+
+/**
+ * Return NotFound status code.
+ *
+ * We return the request because a strema should always
+ * be returned. However, because the response is ended before it
+ * does not matter which stream we return.
+ *
+ *
+ * @param {Stream} req
+ * @param {Stream} res
+ * @api private
+ */
+
+function notfound (req, res) {
+  status(res, 404)
+  return req
 }

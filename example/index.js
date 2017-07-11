@@ -6,11 +6,11 @@ const http = require('http')
 const services = require('..')
 
 
-//const api = services(__dirname + '/api')
-const api = services({
-  '/' : __dirname + '/api',
-  '/super': __dirname + '/doc'
-})
+const api = services(__dirname + '/api')
+// const api = services({
+//   '/' : __dirname + '/api',
+//   '/super': __dirname + '/doc'
+// })
 
 /**
  * Create web service.
