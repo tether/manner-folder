@@ -19,14 +19,33 @@ const find = require('path-find')
  */
 
 module.exports = function (folder) {
-  const tree = {}
-  const routes = walk(folder)
+  let routes = {}
+  if (typeof folder === 'object') {
+    Object.keys(folder).map(key => {
+      router(routes, folder[key], key)
+    })
+  } else router(routes, folder, '/')
   return (req, res) => {
     const pathname = parse(req.url).pathname
     const handler = routes[pathname] || find(pathname, routes)
     if (handler) return handler(req, res)
     return notfound(req, res)
   }
+}
+
+
+/**
+ * Create routes from folder.
+ *
+ * @param {Object} obj
+ * @param {String} folder
+ * @param {String} relative
+ * @api private
+ */
+
+function router (obj, folder, relative) {
+  obj[relative] = middleware(folder, relative)
+  Object.assign(obj, walk(folder, relative))
 }
 
 
@@ -48,7 +67,7 @@ function walk (folder, dir = '/') {
     if (fs.statSync(path).isDirectory()) {
       dir = dir + file
       routes[dir] = middleware(path, dir)
-      routes = Object.assign(routes, walk(path, dir + '/'))
+      Object.assign(routes, walk(path, dir + '/'))
     }
   })
   return routes

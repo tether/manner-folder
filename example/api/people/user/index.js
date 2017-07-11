@@ -2,6 +2,6 @@
 
 module.exports = {
   get() {
-    return 'hello'
+    return 'user endpoint'
   }
 }
