@@ -7,6 +7,7 @@ const join = require('path').join
 const parse = require('url').parse
 const manner = require('manner')
 const status = require('response-status')
+const find = require('path-find')
 
 
 /**
@@ -22,8 +23,9 @@ module.exports = function (folder) {
   const routes = walk(folder)
   return (req, res) => {
     const pathname = parse(req.url).pathname
-    const handler = routes[pathname]
-    return handler ? handler(req, res) : notfound(req, res)
+    const handler = routes[pathname] || find(pathname, routes)
+    if (handler) return handler(req, res)
+    return notfound(req, res)
   }
 }
 
@@ -61,13 +63,12 @@ function walk (folder, dir = '/') {
  */
 
 function middleware (path) {
-  let api = {}
   try {
-    api = require(path)
+    let api = require(path)
+    return manner(api)
   } catch (e) {
     return notfound
   }
-  return manner(api)
 }
 
 
