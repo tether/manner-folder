@@ -24,7 +24,7 @@
     "tape": "*"
   },
   "dependencies": {
-    "manner": "^1.4.0",
+    "manner": "^2.2.3",
     "path-find": "^1.0.1",
     "response-status": "^1.0.0"
   }

@@ -47,7 +47,7 @@ function walk (folder, dir = '/') {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
       dir = dir + file
-      routes[dir] = middleware(path)
+      routes[dir] = middleware(path, dir)
       routes = Object.assign(routes, walk(path, dir + '/'))
     }
   })
@@ -59,13 +59,14 @@ function walk (folder, dir = '/') {
  * Create request middleware.
  *
  * @param {String} path
+ * @param {String} relative
  * @api private
  */
 
-function middleware (path) {
+function middleware (path, relative) {
   try {
     let api = require(path)
-    return manner(api)
+    return manner(api, relative)
   } catch (e) {
     return notfound
   }
