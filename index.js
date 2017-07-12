@@ -65,9 +65,9 @@ function walk (folder, dir = '/') {
   fs.readdirSync(folder).map(file => {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
-      dir = dir + file
-      routes[dir] = middleware(path, dir)
-      Object.assign(routes, walk(path, dir + '/'))
+      let route = dir + file
+      routes[route] = middleware(path, route)
+      Object.assign(routes, walk(path, route + '/'))
     }
   })
   return routes
