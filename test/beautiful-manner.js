@@ -37,3 +37,19 @@ test('should recursively create endpoints from folder', assert => {
     api(req, res).pipe(concat(data => assert.equal(data, 'hello world')))
   })
 })
+
+test('create custom alias from folder endpoints', assert => {
+  assert.plan(2)
+  const api = endpoint({
+    '/world': __dirname + '/hello',
+    '/bar': __dirname + '/foo'
+  })
+  server((req, res) => {
+    req.url = '/bar'
+    api(req, res).pipe(concat(data => assert.equal(data, 'hello bar')))
+  })
+  server((req, res) => {
+    req.url = '/world'
+    api(req, res).pipe(concat(data => assert.equal(data, 'hello world')))
+  })
+})
