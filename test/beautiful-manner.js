@@ -4,10 +4,11 @@
  */
 
 const test = require('tape')
+const endpoint = require('..')
 
-test('this is an example', assert => {
+
+test('should create endpoint from folder path', assert => {
   assert.plan(1)
-  assert.equal(1 + 2, 3)
+  const api = endpoint(__dirname + '/fixtures')
+  assert.equal(typeof api, 'function')
 })
-
-  
