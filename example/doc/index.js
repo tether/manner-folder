@@ -1,4 +1,7 @@
 
 module.exports = {
-  'get': () => 'DOC'
+  'get': () => {
+    console.log('doc endpoint reached')
+    return 'documentation'
+  }
 }

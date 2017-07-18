@@ -21,7 +21,7 @@ const find = require('path-find')
 module.exports = function (folder) {
   let routes = router(folder)
   return (req, res) => {
-    const pathname = parse(req.url).pathname
+    const pathname = normalize(parse(req.url).pathname)
     const handler = routes[pathname] || find(pathname, routes)
     if (handler) return handler(req, res)
     return notfound(req, res)
@@ -44,7 +44,7 @@ function router (folder, relative = '/', routes = {}) {
       Object.assign(routes, router(folder[key], key, routes))
     })
   } else {
-    routes[relative] = middleware(folder, relative)
+    routes[normalize(relative)] = middleware(folder, relative)
     Object.assign(routes, walk(folder, relative))
   }
   return routes
@@ -68,11 +68,25 @@ function walk (folder, dir = '/') {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
       let route = dir + file
-      routes[route] = middleware(path, route)
+      routes[normalize(route)] = middleware(path, route)
       Object.assign(routes, walk(path, route + '/'))
     }
   })
   return routes
+}
+
+
+/**
+ * Normalize path name.
+ *
+ * @param {String} pathname
+ * @return {String}
+ * @api private
+ */
+
+function normalize (pathname) {
+  let suffix = pathname.substr(-1) !== '/' ? '/' : ''
+  return pathname + suffix
 }
 
 
@@ -87,7 +101,10 @@ function walk (folder, dir = '/') {
 function middleware (path, relative) {
   try {
     let api = require(path)
-    return manner(api, relative)
+    return (req, ...args) => {
+      req.url = req.url.substring(relative.length) || '/'
+      return manner(api)(req, ...args)
+    }
   } catch (e) {
     return notfound
   }

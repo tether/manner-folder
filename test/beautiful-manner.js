@@ -20,8 +20,10 @@ test('should call endpoint method on request', assert => {
   assert.plan(1)
   const api = endpoint(__dirname + '/hello')
   server((req, res) => {
-    api(req, res).pipe(concat(data => assert.equal(data, 'hello world')))
-  })
+    const input = api(req, res)
+    input.pipe(concat(data => assert.equal(data, 'hello world')))
+    input.pipe(res)
+  }, null, true)
 })
 
 
@@ -30,12 +32,16 @@ test('should recursively create endpoints from folder', assert => {
   const api = endpoint(__dirname)
   server((req, res) => {
     req.url = '/foo'
-    api(req, res).pipe(concat(data => assert.equal(data, 'hello bar')))
-  })
+    const input = api(req, res)
+    input.pipe(concat(data => assert.equal(data, 'hello bar')))
+    input.pipe(res)
+  }, null, true)
   server((req, res) => {
     req.url = '/hello'
-    api(req, res).pipe(concat(data => assert.equal(data, 'hello world')))
-  })
+    const input = api(req, res)
+    input.pipe(concat(data => assert.equal(data, 'hello world')))
+    input.pipe(res)
+  }, null, true)
 })
 
 
@@ -47,12 +53,16 @@ test('should create custom alias from folder endpoints', assert => {
   })
   server((req, res) => {
     req.url = '/bar'
-    api(req, res).pipe(concat(data => assert.equal(data, 'hello bar')))
-  })
+    const input = api(req, res)
+    input.pipe(concat(data => assert.equal(data, 'hello bar')))
+    input.pipe(res)
+  }, null, true)
   server((req, res) => {
     req.url = '/world'
-    api(req, res).pipe(concat(data => assert.equal(data, 'hello world')))
-  })
+    const input = api(req, res)
+    input.pipe(concat(data => assert.equal(data, 'hello world')))
+    input.pipe(res)
+  }, null, true)
 })
 
 
