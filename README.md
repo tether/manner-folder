@@ -1,6 +1,6 @@
 # Beautiful-Manner
 
-[![Build Status](https://travis-ci.org/petrofeed/beautiful-manner.svg?branch=master)](https://travis-ci.org/petrofeed/beautiful-manner)
+[![Build Status](https://travis-ci.org/tether/beautiful-manner.svg?branch=master)](https://travis-ci.org/tether/beautiful-manner)
 [![NPM](https://img.shields.io/npm/v/beautiful-manner.svg)](https://www.npmjs.com/package/beautiful-manner)
 [![Downloads](https://img.shields.io/npm/dm/beautiful-manner.svg)](http://npm-stat.com/charts.html?package=beautiful-manner)
 [![guidelines](https://tether.github.io/contribution-guide/badge-guidelines.svg)](https://github.com/tether/contribution-guide)
