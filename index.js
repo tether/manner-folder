@@ -45,7 +45,7 @@ function router (folder, relative = '/', routes = {}) {
     })
   } else {
     routes[normalize(relative)] = middleware(folder, relative)
-    Object.assign(routes, walk(folder, relative))
+    Object.assign(routes, walk(folder, normalize(relative)))
   }
   return routes
 }
