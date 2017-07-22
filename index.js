@@ -44,8 +44,12 @@ function router (folder, relative = '/', routes = {}) {
       Object.assign(routes, router(folder[key], key, routes))
     })
   } else {
-    routes[normalize(relative)] = middleware(folder, relative)
-    Object.assign(routes, walk(folder, normalize(relative)))
+    if (typeof folder === 'function') {
+      routes[normalize(relative)] = folder
+    } else {
+      routes[normalize(relative)] = middleware(folder, relative)
+      Object.assign(routes, walk(folder, normalize(relative)))
+    }
   }
   return routes
 }

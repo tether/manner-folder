@@ -65,6 +65,18 @@ test('should create custom alias from folder endpoints', assert => {
   }, null, true)
 })
 
+test('should accept function as service', assert => {
+  assert.plan(1)
+  const api = endpoint({
+    '/' : (req, res) => {
+      assert.ok('endpoint called')
+    }
+  })
+  server((req, res) => {
+    api(req, res)
+  })
+})
+
 
 // test('should create endpoint from function', assert => {
 //   assert.plan(1)

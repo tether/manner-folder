@@ -1,6 +1,6 @@
 {
   "name": "beautiful-manner",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Create web services from folder structure",
   "main": "index.js",
   "scripts": {
