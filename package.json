@@ -26,7 +26,7 @@
     "tape": "*"
   },
   "dependencies": {
-    "manner": "^2.3.1",
+    "manner": "github:tether/manner",
     "path-find": "^2.0.0",
     "response-status": "^1.0.0"
   }

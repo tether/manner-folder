@@ -1,7 +1,8 @@
 
 
 module.exports = {
-  get() {
-    return 'hello world'
+  get: {
+    '/': () => 'hello world',
+    '/:name': (query) => `hello ${query.name}`
   }
 }

@@ -20,12 +20,25 @@ const find = require('path-find')
 
 module.exports = function (folder) {
   let routes = router(folder)
-  return (req, res) => {
+  const cb = (req, res) => {
     const pathname = normalize(parse(req.url).pathname)
     const handler = routes[pathname] || find(pathname, routes)
     if (handler) return handler(req, res)
     return notfound(req, res)
   }
+  return new Proxy(cb, {
+    get(target, key, receiver) {
+      return function (path, ...args) {
+        let pathname = normalize(path)
+        const handler = routes[pathname] || find(pathname, routes)
+        const relative = handler.relative
+        if (relative) {
+          pathname = pathname.substring(relative.length)
+        }
+        return handler && handler.service[key](pathname, ...args)
+      }
+    }
+  })
 }
 
 
@@ -105,10 +118,15 @@ function normalize (pathname) {
 function middleware (path, relative) {
   try {
     let api = require(path)
-    return (req, ...args) => {
+    const service = manner(api)
+    const cb = (req, ...args) => {
       req.url = req.url.substring(relative.length) || '/'
-      return manner(api)(req, ...args)
+      return service(req, ...args)
     }
+    return Object.assign((req, ...args) => {
+      req.url = req.url.substring(relative.length) || '/'
+      return service(req, ...args)
+    }, {service, relative})
   } catch (e) {
     return notfound
   }
