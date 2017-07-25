@@ -78,12 +78,13 @@ test('should accept function as service', assert => {
 })
 
 test('should expose programmatic api', assert => {
-  assert.plan(3)
+  assert.plan(4)
   const api = endpoint({
     '/foo': __dirname + '/foo',
     '/hello': __dirname + '/hello',
   })
   assert.equal(api.get('/foo'), 'hello bar')
+  assert.equal(api.post('/foo'), 'post something')
   assert.equal(api.get('/hello'), 'hello world')
   assert.equal(api.get('/hello/something'), 'hello something')
 })
