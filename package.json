@@ -1,6 +1,6 @@
 {
   "name": "beautiful-manner",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Create web services from folder structure",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "tape": "*"
   },
   "dependencies": {
-    "manner": "github:tether/manner",
+    "manner": "^2.4.0",
     "path-find": "^2.0.0",
     "response-status": "^1.0.0"
   }
