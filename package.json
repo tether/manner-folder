@@ -1,7 +1,7 @@
 {
-  "name": "beautiful-manner",
+  "name": "manner-folder",
   "version": "2.1.6",
-  "description": "Create web services from folder structure",
+  "description": "Create web services from a folder structure",
   "main": "index.js",
   "scripts": {
     "test": "tape test/*.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tether/beautiful-manner.git"
+    "url": "git+https://github.com/tether/manner-folder.git"
   },
   "keywords": [
     "tether"
@@ -17,9 +17,9 @@
   "author": "Olivier Wietrich, Petrofeed Inc",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tether/beautiful-manner/issues"
+    "url": "https://github.com/tether/manner-folder/issues"
   },
-  "homepage": "https://github.com/tether/beautiful-manner#readme",
+  "homepage": "https://github.com/tether/manner-folder#readme",
   "devDependencies": {
     "concat-stream": "^1.6.0",
     "server-test": "^1.1.1",

@@ -1,8 +1,8 @@
-# Beautiful-Manner
+# Manner-folder
 
-[![Build Status](https://travis-ci.org/tether/beautiful-manner.svg?branch=master)](https://travis-ci.org/tether/beautiful-manner)
-[![NPM](https://img.shields.io/npm/v/beautiful-manner.svg)](https://www.npmjs.com/package/beautiful-manner)
-[![Downloads](https://img.shields.io/npm/dm/beautiful-manner.svg)](http://npm-stat.com/charts.html?package=beautiful-manner)
+[![Build Status](https://travis-ci.org/tether/manner-folder.svg?branch=master)](https://travis-ci.org/tether/manner-folder)
+[![NPM](https://img.shields.io/npm/v/manner-folder.svg)](https://www.npmjs.com/package/manner-folder)
+[![Downloads](https://img.shields.io/npm/dm/manner-folder.svg)](http://npm-stat.com/charts.html?package=manner-folder)
 [![guidelines](https://tether.github.io/contribution-guide/badge-guidelines.svg)](https://github.com/tether/contribution-guide)
 
 Based on [manner](https://github.com/tether/manner), this module allows you to create web services in **a second** from a folder.
@@ -13,7 +13,7 @@ Here's an example creating a web service from a folder called `api`.
 
 ```js
 const http = require('http')
-const services = require('beautiful-manner')
+const services = require('manner-folder')
 
 
 /**
@@ -31,15 +31,15 @@ http.createServer((req, res) => {
 }).listen(4000)
 ```
 
-Check out the [complete example](https://github.com/tether/beautiful-manner/tree/master/example) for more information.
+Check out the [complete example](https://github.com/tether/manner-folder/tree/master/example) for more information.
 
 ## Installation
 
 ```shell
-npm install beautiful-manner --save
+npm install manner-folder --save
 ```
 
-[![NPM](https://nodei.co/npm/beautiful-manner.png)](https://nodei.co/npm/beautiful-manner/)
+[![NPM](https://nodei.co/npm/manner-folder.png)](https://nodei.co/npm/manner-folder/)
 
 
 ## Question
