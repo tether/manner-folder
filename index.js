@@ -128,6 +128,7 @@ function middleware (path, relative) {
       return service(req, ...args)
     }, {service, relative})
   } catch (e) {
+    console.error(e)
     return notfound
   }
 }
