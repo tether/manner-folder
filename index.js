@@ -118,15 +118,8 @@ function normalize (pathname) {
 function middleware (path, relative) {
   try {
     let api = require(path)
-    const service = manner(api)
-    const cb = (req, ...args) => {
-      req.url = req.url.substring(relative.length) || '/'
-      return service(req, ...args)
-    }
-    return Object.assign((req, ...args) => {
-      req.url = req.url.substring(relative.length) || '/'
-      return service(req, ...args)
-    }, {service, relative})
+    const service = manner(api, relative)
+    return Object.assign(service, {service, relative})
   } catch (e) {
     console.error(e)
     return notfound
