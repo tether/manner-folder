@@ -25,6 +25,7 @@ module.exports = function (folder) {
   const cb = (req, res) => {
     const pathname = normalize(parse(req.url).pathname)
     const handler = routes[pathname] || find(pathname, routes)
+    debug(`Request endpoint %s ${!!handler ? 'suceeded': 'failed'}`, pathname)
     if (handler) return handler(req, res)
     return notfound(req, res)
   }
