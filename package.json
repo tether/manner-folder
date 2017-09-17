@@ -1,10 +1,10 @@
 {
   "name": "manner-folder",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Create web services from a folder structure",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js",
+    "test": "DEBUG=* tape test/*.js",
     "example": "node example/index.js"
   },
   "repository": {
@@ -26,6 +26,7 @@
     "tape": "*"
   },
   "dependencies": {
+    "debug": "^3.0.1",
     "manner": "*",
     "path-find": "^2.0.0",
     "response-status": "^1.0.0"

@@ -8,6 +8,7 @@ const parse = require('url').parse
 const manner = require('manner')
 const status = require('response-status')
 const find = require('path-find')
+const debug = require('debug')('folder')
 
 
 /**
@@ -19,6 +20,7 @@ const find = require('path-find')
  */
 
 module.exports = function (folder) {
+  debug('Create endpoints from %s', folder)
   let routes = router(folder)
   const cb = (req, res) => {
     const pathname = normalize(parse(req.url).pathname)
@@ -57,12 +59,14 @@ function router (folder, relative = '/', routes = {}) {
       Object.assign(routes, router(folder[key], key, routes))
     })
   } else {
+    const path = normalize(relative)
     if (typeof folder === 'function') {
-      routes[normalize(relative)] = folder
+      routes[path] = folder
     } else {
-      routes[normalize(relative)] = middleware(folder, relative)
-      Object.assign(routes, walk(folder, normalize(relative)))
+      routes[path] = middleware(folder, relative)
+      Object.assign(routes, walk(folder, path))
     }
+    debug('Add route %s', path)
   }
   return routes
 }
@@ -85,7 +89,9 @@ function walk (folder, dir = '/') {
     const path = folder + '/' + file
     if (fs.statSync(path).isDirectory()) {
       let route = dir + file
-      routes[normalize(route)] = middleware(path, route)
+      const normalized = normalize(route)
+      routes[normalized] = middleware(path, route)
+      debug('Add route %s', normalized)
       Object.assign(routes, walk(path, route + '/'))
     }
   })
@@ -119,6 +125,7 @@ function middleware (path, relative) {
   try {
     let api = require(path)
     const service = manner(api, relative)
+    debug('Create route for %s from %s', relative, path)
     return Object.assign(service, {service, relative})
   } catch (e) {
     console.error(e)
