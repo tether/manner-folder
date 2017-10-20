@@ -1,6 +1,6 @@
 {
   "name": "manner-folder",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Create web services from a folder structure",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "debug": "^3.0.1",
-    "manner": "*",
+    "manner": "^3.0.0",
     "path-find": "^2.0.0",
     "response-status": "^1.0.0"
   }

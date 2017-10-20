@@ -125,7 +125,7 @@ function normalize (pathname) {
 function middleware (path, relative) {
   try {
     let api = require(path)
-    const service = manner(api, relative)
+    const service = manner(api, {relative})
     debug('Create route for %s from %s', relative, path)
     return Object.assign(service, {service, relative})
   } catch (e) {
