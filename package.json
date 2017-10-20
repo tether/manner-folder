@@ -1,10 +1,10 @@
 {
   "name": "manner-folder",
-  "version": "2.2.3",
+  "version": "2.3.0",
   "description": "Create web services from a folder structure",
   "main": "index.js",
   "scripts": {
-    "test": "DEBUG=* tape test/*.js",
+    "test": "tape test/*.js",
     "example": "node example/index.js"
   },
   "repository": {
@@ -14,7 +14,7 @@
   "keywords": [
     "tether"
   ],
-  "author": "Olivier Wietrich, Petrofeed Inc",
+  "author": "Olivier Wietrich",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tether/manner-folder/issues"

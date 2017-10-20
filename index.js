@@ -125,13 +125,31 @@ function normalize (pathname) {
 function middleware (path, relative) {
   try {
     let api = require(path)
-    const service = manner(api, {relative})
+    const service = manner(api, schema(path, relative))
     debug('Create route for %s from %s', relative, path)
     return Object.assign(service, {service, relative})
   } catch (e) {
     console.error(e)
     return notfound
   }
+}
+
+
+/**
+ * Synchronously look for schema.
+ *
+ * @param {String} path
+ * @param {String} relative
+ * @api private
+ */
+
+function schema (path, relative) {
+  let result = {}
+  try {
+    result = require(path + '/schema')
+  } catch (e) {}
+  result.relative = relative
+  return result
 }
 
 

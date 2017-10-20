@@ -88,3 +88,19 @@ test('should expose programmatic api', assert => {
   assert.equal(api.get('/hello'), 'hello world')
   assert.equal(api.get('/hello/something'), 'hello something')
 })
+
+
+// @note should apply the schema for methodd, not HTTP
+test('should accept schema', assert => {
+  assert.plan(1)
+  const api = endpoint({
+    '/advanced': __dirname + '/advanced'
+  })
+
+  server((req, res) => {
+    req.url = '/advanced?name=bar'
+    const input = api(req, res)
+    input.pipe(concat(data => assert.equal(data, 'hello bar')))
+    input.pipe(res)
+  }, null, true)
+})
