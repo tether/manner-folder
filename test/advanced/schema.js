@@ -3,7 +3,7 @@
 module.exports = {
   get: {
     '/': {
-      params: {
+      query: {
         name(value) {
           return 'hello ' + value
         }
