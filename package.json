@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "debug": "^3.0.1",
-    "manner": "^4.1.0",
+    "manner": "^4.1.1",
     "path-find": "^2.0.0",
     "response-status": "^1.0.0"
   }
