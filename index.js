@@ -11,6 +11,7 @@ const find = require('path-find')
 const debug = require('debug')('folder')
 
 
+
 /**
  * Create HTTP methods middleware from folder structure.
  *
@@ -23,6 +24,7 @@ module.exports = function (folder) {
   debug('Create endpoints from %s', folder)
   let routes = router(folder)
   const cb = (req, res) => {
+    console.log(req.url, 'pathname', normalize(parse(req.url).pathname))
     const pathname = normalize(parse(req.url).pathname)
     const handler = routes[pathname] || find(pathname, routes)
     debug(`Request endpoint %s ${!!handler ? 'suceeded': 'failed'}`, pathname)
