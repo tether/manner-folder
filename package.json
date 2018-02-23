@@ -1,11 +1,10 @@
 {
   "name": "manner-folder",
-  "version": "3.1.0",
-  "description": "Create web services from a folder structure",
+  "version": "4.0.0",
+  "description": "Create resource tree from folder structure",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js",
-    "example": "node example/index.js"
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
