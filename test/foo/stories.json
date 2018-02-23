@@ -1,0 +1,13 @@
+{
+  "get": {
+    "/": {
+      "success": {
+        "data": {
+          "name": "hello"
+        },
+        "status": 200,
+        "payload": {}
+      }
+    }
+  }
+}

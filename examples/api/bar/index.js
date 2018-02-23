@@ -1,5 +1,5 @@
 
 
 module.exports = {
-  'get': () => 'API'
+  get: data => data
 }

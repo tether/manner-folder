@@ -5,22 +5,24 @@
 [![Downloads](https://img.shields.io/npm/dm/manner-folder.svg)](http://npm-stat.com/charts.html?package=manner-folder)
 [![guidelines](https://tether.github.io/contribution-guide/badge-guidelines.svg)](https://github.com/tether/contribution-guide)
 
-Based on [manner](https://github.com/tether/manner), this module allows you to create web services in **a second** from a folder.
+Create [manner](https://github.com/tether/manner) resource tree from folder structure.
 
 ## Usage
 
-Here's an example creating a web service from a folder called `api`.
+Create web API from a folder called `v1`
+
 
 ```js
-const http = require('http')
-const services = require('manner-folder')
+const manner = require('manner')
+const folder = require('manner-folder')
 
 
 /**
- * Create API.
+ * Generate resource tree and pass it to manner.
  */
 
-const api = services(__dirname + '/api')
+const api = manner(folder(__dirname + '/v1'))
+
 
 /**
  * Serve API through HTTP.
@@ -31,7 +33,7 @@ http.createServer((req, res) => {
 }).listen(4000)
 ```
 
-Check out the [complete example](https://github.com/tether/manner-folder/tree/master/example) for more information.
+Check out our [examples](./examples) for more usage examples.
 
 ## Installation
 

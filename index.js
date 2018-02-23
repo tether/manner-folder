@@ -1,174 +1,192 @@
 /**
- * Dependencies.
+ * Dependencie(s)
  */
 
 const fs = require('fs')
-const join = require('path').join
-const parse = require('url').parse
-const manner = require('manner')
-const status = require('response-status')
-const find = require('path-find')
-const debug = require('debug')('folder')
-
+const {
+  join,
+  relative
+} = require('path')
 
 
 /**
- * Create HTTP methods middleware from folder structure.
+ * Generate a manner tree (resources) from a folder structure.
  *
- * @param {String} folder
- * @return {Stream}
+ * @param {String} path
+ * @param {Object?} options
  * @api public
  */
 
-module.exports = function (folder) {
-  debug('Create endpoints from %s', folder)
-  let routes = router(folder)
-  const cb = (req, res) => {
-    console.log(req.url, 'pathname', normalize(parse(req.url).pathname))
-    const pathname = normalize(parse(req.url).pathname)
-    const handler = routes[pathname] || find(pathname, routes)
-    debug(`Request endpoint %s ${!!handler ? 'suceeded': 'failed'}`, pathname)
-    if (handler) return handler(req, res)
-    return notfound(req, res)
-  }
-  return new Proxy(cb, {
-    get(target, key, receiver) {
-      return function (path, ...args) {
-        let pathname = normalize(path)
-        const handler = routes[pathname] || find(pathname, routes)
-        const relative = handler.relative
-        if (relative) {
-          pathname = pathname.substring(relative.length)
-        }
-        return handler && handler.service[key](pathname, ...args)
-      }
-    }
+module.exports = (path, options = {}) => {
+  let resources = {}
+  walk(path, folder => {
+    resources = merge(
+      resources,
+      resource(
+        join('/', relative(path, folder)),
+        read(folder) || {},
+        schema(folder, options.schema),
+        stories(folder, options.stories)
+      )
+    )
   })
+  return resources
 }
 
 
 /**
- * Create routes from folder object or string.
+ * Read schema if exist.
  *
- * @param {String} folder
- * @param {String} relative
- * @param {Object} routes
+ * @param {String} path
+ * @return {Object} (empty if schema does not exist)
  * @api private
  */
 
-function router (folder, relative = '/', routes = {}) {
-  if (typeof folder === 'object' ) {
-    Object.keys(folder).map(key => {
-      Object.assign(routes, router(folder[key], key, routes))
-    })
-  } else {
-    const path = normalize(relative)
-    if (typeof folder === 'function') {
-      routes[path] = folder
-    } else {
-      routes[path] = middleware(folder, relative)
-      Object.assign(routes, walk(folder, path))
-    }
-    debug('Add route %s', path)
-  }
-  return routes
+function schema (path, name = 'schema') {
+  const js = read(join(path, `${name}.js`))
+  const json = read(join(path, `${name}.json`))
+  return js || json || {}
 }
 
 
 /**
- * Recursively walk a folder and create a tree
- * graph representation.
+ * Read user stories if exist.
  *
- * @param {Object} routes
- * @param {Object} parent
- * @param {String} folder
+ * @param {String} path
+ * @return {Object} (empty if user stories does not exist)
+ * @api private
+ */
+
+function stories (path, name = 'stories') {
+  const js = read(join(path, `${name}.js`))
+  const json = read(join(path, `${name}.json`))
+  return js || json || {}
+}
+
+
+/**
+ * Merge srouce object with manner tree.
+ *
+ * @param {Object} src
+ * @param {Object} tree
  * @return {Object}
  * @api private
  */
 
-function walk (folder, dir = '/') {
-  let routes = {}
-  fs.readdirSync(folder).map(file => {
-    const path = folder + '/' + file
-    if (fs.statSync(path).isDirectory()) {
-      let route = dir + file
-      const normalized = normalize(route)
-      routes[normalized] = middleware(path, route)
-      debug('Add route %s', normalized)
-      Object.assign(routes, walk(path, route + '/'))
+function merge (src, tree) {
+  Object.keys(tree).map(method => {
+    const services = tree[method]
+    const node = src[method] = src[method] || {}
+    Object.keys(services).map(path => {
+      node[path] = services[path]
+    })
+  })
+  return src
+}
+
+
+/**
+ * Walk folder recursively.
+ *
+ * @param {String} path
+ * @param {Function} cb
+ * @param {String} relative
+ * @api private
+ */
+
+function walk (path, cb) {
+  cb(path)
+  fs.readdirSync(path).map(file => {
+    const folder = join(path, file)
+    if (fs.statSync(folder).isDirectory()) {
+      walk(folder, cb)
     }
   })
-  return routes
 }
 
 
 /**
- * Normalize path name.
+ * Read manner resource Synchronously.
  *
- * @param {String} pathname
- * @return {String}
+ * @param {String} folder
  * @api private
  */
 
-function normalize (pathname) {
-  let suffix = pathname.substr(-1) !== '/' ? '/' : ''
-  return pathname + suffix
-}
-
-
-/**
- * Create request middleware.
- *
- * @param {String} path
- * @param {String} relative
- * @api private
- */
-
-function middleware (path, relative) {
+function read (folder) {
+  var resource = null
   try {
-    let api = require(path)
-    const service = manner(api, schema(path, relative))
-    debug('Create route for %s from %s', relative, path)
-    return Object.assign(service, {service, relative})
-  } catch (e) {
-    console.error(e)
-    return notfound
-  }
-}
-
-
-/**
- * Synchronously look for schema.
- *
- * @param {String} path
- * @param {String} relative
- * @api private
- */
-
-function schema (path, relative) {
-  let result = {}
-  try {
-    result = require(path + '/schema')
+    resource = require(folder)
   } catch (e) {}
-  result.relative = relative
+  return resource
+}
+
+
+/**
+ * Create manner resource from a set of services, schema and user stories.
+ *
+ * @param {String} pathn
+ * @param {Object} services
+ * @param {Object} conf (services schema)
+ * @param {Object} cases (user stories)
+ * @return {Object}
+ * @api private
+ */
+
+function resource (path, services, conf = {}, cases = {}) {
+  const result = {}
+  Object.keys(services).map(method => {
+    const res = result[method] = result[method] || {}
+    const service = services[method]
+    const schema = conf[method] || {}
+    const stories = cases[method] || {}
+    if (typeof service === 'object') {
+      Object.keys(service).map(p => {
+        const route = trim(join(path, p))
+        res[route] = parse(service[p], schema[p], stories[p])
+      })
+    } else {
+      res[path] = parse(service, schema['/'], stories['/'])
+    }
+  })
   return result
 }
 
 
 /**
- * Return NotFound status code.
+ * Trim path.
  *
- * We return the request because a strema should always
- * be returned. However, because the response is ended before it
- * does not matter which stream we return.
+ * Remove empty characters and end backslash.
  *
- *
- * @param {Stream} req
- * @param {Stream} res
+ * @param {String} path
+ * @return {String}
  * @api private
  */
 
-function notfound (req, res) {
-  status(res, 404)
-  return req
+function trim (path) {
+  path = path.trim()
+  const length = path.length - 1
+  if (length > 0 && path[length] === '/') {
+    path = path.substring(0, length)
+  }
+  return path
+}
+
+
+/**
+ * Parse function to return manner service.
+ *
+ * @param {Function} service
+ * @param {Object} data schema
+ * @param {Object} stories
+ * @return {Object}
+ * @api private
+ */
+
+function parse (service, data = {}, stories = {}) {
+  return {
+    service,
+    options: {},
+    ...data,
+    stories
+  }
 }

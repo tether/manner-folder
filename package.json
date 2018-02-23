@@ -1,18 +1,26 @@
 {
   "name": "manner-folder",
-  "version": "3.1.0",
-  "description": "Create web services from a folder structure",
+  "version": "4.1.0",
+  "engines" : {
+    "node" : ">=8.9.4"
+  },
+  "description": "Create resource tree from folder structure",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js",
-    "example": "node example/index.js"
+    "example:prod": "NODE_ENV=production node examples/index.js",
+    "example:dev": "NODE_ENV=development node examples/index.js",
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tether/manner-folder.git"
   },
   "keywords": [
-    "tether"
+    "manner",
+    "resource",
+    "web",
+    "api",
+    "tree"
   ],
   "author": "Olivier Wietrich",
   "license": "MIT",
@@ -21,14 +29,8 @@
   },
   "homepage": "https://github.com/tether/manner-folder#readme",
   "devDependencies": {
-    "concat-stream": "^1.6.0",
-    "server-test": "^1.1.1",
-    "tape": "*"
+    "tape": "*",
+    "manner": "*"
   },
-  "dependencies": {
-    "debug": "^3.0.1",
-    "manner": "^4.3.0",
-    "path-find": "^2.0.0",
-    "response-status": "^1.0.0"
-  }
+  "dependencies": {}
 }

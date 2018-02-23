@@ -1,3 +1,0 @@
-message post {
-  required string email = 1;
-}
