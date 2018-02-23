@@ -21,14 +21,7 @@
   },
   "homepage": "https://github.com/tether/manner-folder#readme",
   "devDependencies": {
-    "concat-stream": "^1.6.0",
-    "server-test": "^1.1.1",
     "tape": "*"
   },
-  "dependencies": {
-    "debug": "^3.0.1",
-    "manner": "^4.3.0",
-    "path-find": "^2.0.0",
-    "response-status": "^1.0.0"
-  }
+  "dependencies": {}
 }
