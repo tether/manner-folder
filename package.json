@@ -11,7 +11,11 @@
     "url": "git+https://github.com/tether/manner-folder.git"
   },
   "keywords": [
-    "tether"
+    "manner",
+    "resource",
+    "web",
+    "api",
+    "tree"
   ],
   "author": "Olivier Wietrich",
   "license": "MIT",
