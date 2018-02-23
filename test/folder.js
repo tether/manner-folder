@@ -39,3 +39,63 @@ test('should generate a manner tree from a folder structure', assert => {
     assert.equal(typeof bar, 'function')
     assert.equal(bar(), 'post something')
 })
+
+test('should generate a manner tree with schema', assert => {
+  assert.plan(3)
+  const resources = folder(__dirname)
+  assert.deepEqual(resources.get['/advanced'].data, {
+    name: {
+      type: 'string'
+    }
+  })
+  assert.deepEqual(resources.get['/foo'].data, {
+    name: {
+      type: 'string',
+      default: 10
+    }
+  })
+  assert.deepEqual(resources.post['/foo'].data, {
+    name: {
+      type: 'string',
+      default: 20
+    }
+  })
+})
+
+
+test('should generate a manner tree with stories', assert => {
+  assert.plan(3)
+  const resources = folder(__dirname)
+  assert.deepEqual(resources.get['/foo'].stories, {
+    success: {
+      data: {
+        name: 'hello'
+      },
+      status: 200,
+      payload: {}
+    }
+  })
+  assert.deepEqual(resources.get['/hello'].stories, {
+    success: {
+      status: 200,
+      data: {
+        name: 'hello'
+      },
+      payload: {
+        name: 'hello'
+      }
+    }
+  })
+  assert.deepEqual(resources.get['/hello/:name'].stories, {
+    success: {
+      status: 200,
+      data: {
+        name: 'john'
+      },
+      payload: {
+        name: 'hello john'
+      }
+    }
+  })
+
+})

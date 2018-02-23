@@ -19,13 +19,45 @@ module.exports = (path) => {
   walk(path, folder => {
     resources = merge(
       resources,
-      resource(join('/',
-        relative(path, folder)),
-        read(folder)
+      resource(
+        join('/', relative(path, folder)),
+        read(folder) || {},
+        schema(folder),
+        stories(folder)
       )
     )
   })
   return resources
+}
+
+
+/**
+ * Read schema if exist.
+ *
+ * @param {String} path
+ * @return {Object} (empty if schema does not exist)
+ * @api private
+ */
+
+function schema (path) {
+  const js = read(join(path, 'schema.js'))
+  const json = read(join(path, 'schema.json'))
+  return js || json || {}
+}
+
+
+/**
+ * Read user stories if exist.
+ *
+ * @param {String} path
+ * @return {Object} (empty if user stories does not exist)
+ * @api private
+ */
+
+function stories (path) {
+  const js = read(join(path, 'stories.js'))
+  const json = read(join(path, 'stories.json'))
+  return js || json || {}
 }
 
 
@@ -78,11 +110,10 @@ function walk (path, cb) {
  */
 
 function read (folder) {
+  var resource = null
   try {
-    var resource = require(folder)
-  } catch (e) {
-    resource = {}
-  }
+    resource = require(folder)
+  } catch (e) {}
   return resource
 }
 
@@ -92,24 +123,26 @@ function read (folder) {
  *
  * @param {String} pathn
  * @param {Object} services
- * @param {Object} schema
- * @param {Object} stories
+ * @param {Object} conf (services schema)
+ * @param {Object} cases (user stories)
  * @return {Object}
  * @api private
  */
 
-function resource (path, services, schema = {}, stories = {}) {
+function resource (path, services, conf = {}, cases = {}) {
   const result = {}
   Object.keys(services).map(method => {
     const res = result[method] = result[method] || {}
     const service = services[method]
+    const schema = conf[method] || {}
+    const stories = cases[method] || {}
     if (typeof service === 'object') {
       Object.keys(service).map(p => {
         const route = trim(join(path, p))
-        res[route] = parse(service[p])
+        res[route] = parse(service[p], schema[p], stories[p])
       })
     } else {
-      res[path] = parse(service)
+      res[path] = parse(service, schema['/'], stories['/'])
     }
   })
   return result
@@ -140,16 +173,17 @@ function trim (path) {
  * Parse function to return manner service.
  *
  * @param {Function} service
- * @param {Object} schema
+ * @param {Object} data schema
  * @param {Object} stories
  * @return {Object}
  * @api private
  */
 
-function parse (service, schema, stories) {
+function parse (service, data = {}, stories = {}) {
   return {
     service,
     options: {},
-    data: {}
+    ...data,
+    stories
   }
 }
