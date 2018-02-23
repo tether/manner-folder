@@ -33,6 +33,7 @@ http.createServer((req, res) => {
 }).listen(4000)
 ```
 
+Check out our [examples](./examples) for more usage examples.
 
 ## Installation
 
