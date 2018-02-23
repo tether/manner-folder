@@ -1,6 +1,9 @@
 {
   "name": "manner-folder",
   "version": "4.1.0",
+  "engines" : {
+    "node" : ">=8.9.4"
+  },
   "description": "Create resource tree from folder structure",
   "main": "index.js",
   "scripts": {
