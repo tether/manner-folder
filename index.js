@@ -8,13 +8,16 @@ const {
   relative
 } = require('path')
 
+
 /**
  * Generate a manner tree (resources) from a folder structure.
  *
+ * @param {String} path
+ * @param {Object?} options
  * @api public
  */
 
-module.exports = (path) => {
+module.exports = (path, options = {}) => {
   let resources = {}
   walk(path, folder => {
     resources = merge(
@@ -22,8 +25,8 @@ module.exports = (path) => {
       resource(
         join('/', relative(path, folder)),
         read(folder) || {},
-        schema(folder),
-        stories(folder)
+        schema(folder, options.schema),
+        stories(folder, options.stories)
       )
     )
   })
@@ -39,9 +42,9 @@ module.exports = (path) => {
  * @api private
  */
 
-function schema (path) {
-  const js = read(join(path, 'schema.js'))
-  const json = read(join(path, 'schema.json'))
+function schema (path, name = 'schema') {
+  const js = read(join(path, `${name}.js`))
+  const json = read(join(path, `${name}.json`))
   return js || json || {}
 }
 
@@ -54,9 +57,9 @@ function schema (path) {
  * @api private
  */
 
-function stories (path) {
-  const js = read(join(path, 'stories.js'))
-  const json = read(join(path, 'stories.json'))
+function stories (path, name = 'stories') {
+  const js = read(join(path, `${name}.js`))
+  const json = read(join(path, `${name}.json`))
   return js || json || {}
 }
 
@@ -92,10 +95,10 @@ function merge (src, tree) {
  */
 
 function walk (path, cb) {
+  cb(path)
   fs.readdirSync(path).map(file => {
     const folder = join(path, file)
     if (fs.statSync(folder).isDirectory()) {
-      cb(folder)
       walk(folder, cb)
     }
   })

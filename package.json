@@ -4,6 +4,8 @@
   "description": "Create resource tree from folder structure",
   "main": "index.js",
   "scripts": {
+    "example:prod": "NODE_ENV=production node examples/index.js",
+    "example:dev": "NODE_ENV=development node examples/index.js",
     "test": "tape test/*.js"
   },
   "repository": {
@@ -24,7 +26,8 @@
   },
   "homepage": "https://github.com/tether/manner-folder#readme",
   "devDependencies": {
-    "tape": "*"
+    "tape": "*",
+    "manner": "*"
   },
   "dependencies": {}
 }
