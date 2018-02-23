@@ -9,7 +9,8 @@ Create [manner](https://github.com/tether/manner) resource tree from folder stru
 
 ## Usage
 
-Create API from a folder called `v1`
+Create web API from a folder called `v1`
+
 
 ```js
 const manner = require('manner')
