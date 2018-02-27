@@ -24,7 +24,9 @@ module.exports = (path, options = {}) => {
       resources,
       resource(
         join('/', relative(path, folder)),
-        read(folder) || {},
+        read(folder + '/index.js', e => {
+          throw new Error(e)
+        }) || {},
         schema(folder, options.schema),
         stories(folder, options.stories)
       )
@@ -112,11 +114,15 @@ function walk (path, cb) {
  * @api private
  */
 
-function read (folder) {
+function read (folder, catcher = a => a) {
   var resource = null
-  try {
-    resource = require(folder)
-  } catch (e) {}
+  if (fs.existsSync(folder)) {
+    try {
+      resource = require(folder)
+    } catch (e) {
+      catcher(e)
+    }
+  }
   return resource
 }
 
