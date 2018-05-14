@@ -6,7 +6,9 @@
           "name": "hello"
         },
         "status": 200,
-        "payload": {}
+        "payload": {
+          "name": "hello"
+        }
       }
     }
   }

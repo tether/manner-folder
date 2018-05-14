@@ -8,7 +8,6 @@ const {
   relative
 } = require('path')
 
-
 /**
  * Generate a manner tree (resources) from a folder structure.
  *
@@ -20,21 +19,43 @@ const {
 module.exports = (path, options = {}) => {
   let resources = {}
   walk(path, folder => {
+    const samples = stories(folder, options.stories)
     resources = merge(
       resources,
       resource(
         join('/', relative(path, folder)),
-        read(folder + '/index.js', e => {
+        options.disabled ? mock(samples) : (read(folder + '/index.js', e => {
           throw new Error(e)
-        }) || {},
+        }) || {}),
         schema(folder, options.schema),
-        stories(folder, options.stories)
+        samples
       )
     )
   })
   return resources
 }
 
+/**
+ * Mock service.
+ *
+ * This handlers mock services with empty function to avoid
+ * executing real service.
+ *
+ * @param {Object} samples
+ * @return {Object}
+ * @api private
+ */
+
+function mock (samples) {
+  let services = {}
+  Object.keys(samples).map(key => {
+    const service = services[key] = {}
+    Object.keys(samples[key]).map(path => {
+      service[path] = () => 'service disabled'
+    })
+  })
+  return services
+}
 
 /**
  * Read schema if exist.
@@ -50,7 +71,6 @@ function schema (path, name = 'schema') {
   return js || json || {}
 }
 
-
 /**
  * Read user stories if exist.
  *
@@ -64,7 +84,6 @@ function stories (path, name = 'stories') {
   const json = read(join(path, `${name}.json`))
   return js || json || {}
 }
-
 
 /**
  * Merge srouce object with manner tree.
@@ -86,7 +105,6 @@ function merge (src, tree) {
   return src
 }
 
-
 /**
  * Walk folder recursively.
  *
@@ -106,7 +124,6 @@ function walk (path, cb) {
   })
 }
 
-
 /**
  * Read manner resource Synchronously.
  *
@@ -125,7 +142,6 @@ function read (folder, catcher = a => a) {
   }
   return resource
 }
-
 
 /**
  * Create manner resource from a set of services, schema and user stories.
@@ -157,7 +173,6 @@ function resource (path, services, conf = {}, cases = {}) {
   return result
 }
 
-
 /**
  * Trim path.
  *
@@ -176,7 +191,6 @@ function trim (path) {
   }
   return path
 }
-
 
 /**
  * Parse function to return manner service.
