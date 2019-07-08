@@ -164,13 +164,28 @@ function resource (path, services, conf = {}, cases = {}) {
     if (typeof service === 'object') {
       Object.keys(service).map(p => {
         const route = trim(join(path, p))
-        res[route] = parse(service[p], schema[p], stories[p])
+        res[posix(route)] = parse(service[p], schema[p], stories[p])
       })
     } else {
-      res[path] = parse(service, schema['/'], stories['/'])
+      res[posix(path)] = parse(service, schema['/'], stories['/'])
     }
   })
   return result
+}
+
+/**
+ * Transform win32 path into posix path.
+ *
+ * @param {String} path
+ * @return {String}
+ * @api private
+ */
+
+function posix (path) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path)
+  const hasNonAscii = /[^\u0000-\u0080]+/.test(path)
+  if (isExtendedLengthPath || hasNonAscii) return path
+  return path.replace(/\\/g, '/')
 }
 
 /**
